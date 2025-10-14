@@ -28,6 +28,7 @@ class Product(StrEnum):
     SESSION_SUMMARY = "session_summary"
     WAREHOUSE = "warehouse"
     EXPERIMENTS = "experiments"
+    SDK_DOCTOR = "sdk_doctor"
 
 
 class Feature(StrEnum):
@@ -105,6 +106,7 @@ class QueryTags(BaseModel):
     dashboard_id: Optional[int] = None
     insight_id: Optional[int] = None
     exported_asset_id: Optional[int] = None
+    export_format: Optional[str] = None
     chargeable: Optional[int] = None
     request_name: Optional[str] = None
     name: Optional[str] = None

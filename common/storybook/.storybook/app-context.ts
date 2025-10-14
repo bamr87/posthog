@@ -25,5 +25,6 @@ export const getStorybookAppContext = (): AppContext => ({
         survey: 'manager',
         experiment: 'manager',
         external_data_source: 'manager',
+        web_analytics: 'manager',
     },
 })

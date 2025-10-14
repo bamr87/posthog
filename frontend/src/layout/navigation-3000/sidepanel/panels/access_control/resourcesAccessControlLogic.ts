@@ -275,6 +275,7 @@ export const resourcesAccessControlLogic = kea<resourcesAccessControlLogicType>(
                     AccessControlResourceType.RevenueAnalytics,
                     AccessControlResourceType.SessionRecording,
                     AccessControlResourceType.Survey,
+                    AccessControlResourceType.WebAnalytics,
                 ]
             },
         ],
