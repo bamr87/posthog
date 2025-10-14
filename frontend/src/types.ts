@@ -297,18 +297,18 @@ export type WithAccessControl = {
 }
 
 export enum AccessControlResourceType {
-    Project = 'project',
-    Organization = 'organization',
     Action = 'action',
-    FeatureFlag = 'feature_flag',
-    Insight = 'insight',
     Dashboard = 'dashboard',
-    Notebook = 'notebook',
-    SessionRecording = 'session_recording',
-    RevenueAnalytics = 'revenue_analytics',
-    Survey = 'survey',
     Experiment = 'experiment',
     ExternalDataSource = 'external_data_source',
+    FeatureFlag = 'feature_flag',
+    Insight = 'insight',
+    Notebook = 'notebook',
+    Organization = 'organization',
+    Project = 'project',
+    RevenueAnalytics = 'revenue_analytics',
+    SessionRecording = 'session_recording',
+    Survey = 'survey',
     WebAnalytics = 'web_analytics',
 }
 
