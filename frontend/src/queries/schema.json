@@ -807,6 +807,11 @@
                 "search_insights",
                 "session_summarization",
                 "create_dashboard",
+                "edit_current_dashboard",
+                "read_taxonomy",
+                "search",
+                "read_data",
+                "todo_write",
                 "filter_revenue_analytics"
             ],
             "type": "string"
@@ -9508,6 +9513,10 @@
             "required": ["table_name", "timestamp_field", "distinct_id_field", "id_field"],
             "type": "object"
         },
+        "DataWarehouseManagedViewsetKind": {
+            "const": "revenue_analytics",
+            "type": "string"
+        },
         "DataWarehouseNode": {
             "additionalProperties": false,
             "properties": {
@@ -11450,6 +11459,12 @@
                     "required": ["distinct_ids", "properties"],
                     "type": "object"
                 },
+                "person_id": {
+                    "type": "string"
+                },
+                "person_mode": {
+                    "type": "string"
+                },
                 "properties": {
                     "type": "object"
                 },
@@ -12034,6 +12049,9 @@
                 "goal": {
                     "$ref": "#/definitions/ExperimentMetricGoal"
                 },
+                "isSharedMetric": {
+                    "type": "boolean"
+                },
                 "kind": {
                     "const": "ExperimentMetric",
                     "type": "string"
@@ -12053,6 +12071,9 @@
                         "$ref": "#/definitions/ExperimentFunnelMetricStep"
                     },
                     "type": "array"
+                },
+                "sharedMetricId": {
+                    "type": "number"
                 },
                 "uuid": {
                     "type": "string"
@@ -12258,6 +12279,9 @@
                 "ignore_zeros": {
                     "type": "boolean"
                 },
+                "isSharedMetric": {
+                    "type": "boolean"
+                },
                 "kind": {
                     "const": "ExperimentMetric",
                     "type": "string"
@@ -12274,6 +12298,9 @@
                 },
                 "response": {
                     "type": "object"
+                },
+                "sharedMetricId": {
+                    "type": "number"
                 },
                 "source": {
                     "$ref": "#/definitions/ExperimentMetricSource"
@@ -12343,6 +12370,9 @@
                 "goal": {
                     "$ref": "#/definitions/ExperimentMetricGoal"
                 },
+                "isSharedMetric": {
+                    "type": "boolean"
+                },
                 "kind": {
                     "const": "ExperimentMetric",
                     "type": "string"
@@ -12352,6 +12382,9 @@
                 },
                 "response": {
                     "type": "object"
+                },
+                "sharedMetricId": {
+                    "type": "number"
                 },
                 "uuid": {
                     "type": "string"
@@ -12427,6 +12460,12 @@
                 },
                 "metric_uuid": {
                     "type": "string"
+                },
+                "recalculation_created_at": {
+                    "type": ["string", "null"]
+                },
+                "recalculation_status": {
+                    "type": ["string", "null"]
                 },
                 "status": {
                     "enum": ["pending", "completed", "partial", "failed"],
@@ -12613,6 +12652,9 @@
                 "goal": {
                     "$ref": "#/definitions/ExperimentMetricGoal"
                 },
+                "isSharedMetric": {
+                    "type": "boolean"
+                },
                 "kind": {
                     "const": "ExperimentMetric",
                     "type": "string"
@@ -12629,6 +12671,9 @@
                 },
                 "response": {
                     "type": "object"
+                },
+                "sharedMetricId": {
+                    "type": "number"
                 },
                 "uuid": {
                     "type": "string"
@@ -13256,6 +13301,7 @@
                 "revenue_analytics",
                 "revenue_analytics_metadata",
                 "marketing_settings",
+                "managed_viewsets",
                 "endpoints",
                 "sql_editor",
                 "web_analytics",
@@ -13278,6 +13324,7 @@
                 "action",
                 "comment",
                 "annotation",
+                "event",
                 "event_definition",
                 "property_definition",
                 "ingestion_warning",
@@ -13295,7 +13342,8 @@
                 "team_activity",
                 "home",
                 "apps",
-                "live"
+                "live",
+                "chat"
             ],
             "type": "string"
         },
@@ -13345,6 +13393,10 @@
                 },
                 "ref": {
                     "description": "Object's ID or other unique reference",
+                    "type": "string"
+                },
+                "sceneKey": {
+                    "description": "Match this with the a base scene key or a specific one",
                     "type": "string"
                 },
                 "shortcut": {
@@ -14653,6 +14705,12 @@
         "HogQLMetadataResponse": {
             "additionalProperties": false,
             "properties": {
+                "ch_table_names": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "errors": {
                     "items": {
                         "$ref": "#/definitions/HogQLNotice"
@@ -14820,6 +14878,9 @@
                     "type": "string"
                 },
                 "optimizeJoinedFilters": {
+                    "type": "boolean"
+                },
+                "optimizeProjections": {
                     "type": "boolean"
                 },
                 "personsArgMaxVersion": {
@@ -15864,6 +15925,19 @@
             },
             "type": "object"
         },
+        "IntegrationFilter": {
+            "additionalProperties": false,
+            "properties": {
+                "integrationSourceIds": {
+                    "description": "Selected integration source IDs to filter by (e.g., table IDs or source map IDs)",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
         "IntegrationKind": {
             "enum": [
                 "slack",
@@ -16476,6 +16550,10 @@
                 "includeRevenue": {
                     "type": "boolean"
                 },
+                "integrationFilter": {
+                    "$ref": "#/definitions/IntegrationFilter",
+                    "description": "Filter by integration IDs"
+                },
                 "kind": {
                     "const": "MarketingAnalyticsAggregatedQuery",
                     "type": "string"
@@ -16703,6 +16781,10 @@
                 },
                 "includeRevenue": {
                     "type": "boolean"
+                },
+                "integrationFilter": {
+                    "$ref": "#/definitions/IntegrationFilter",
+                    "description": "Filter by integration type"
                 },
                 "kind": {
                     "const": "MarketingAnalyticsTableQuery",
@@ -17393,6 +17475,9 @@
                 },
                 {
                     "$ref": "#/definitions/RecordingPropertyFilter"
+                },
+                {
+                    "$ref": "#/definitions/GroupPropertyFilter"
                 }
             ]
         },
@@ -18157,6 +18242,7 @@
             "enum": [
                 "meta",
                 "event",
+                "internal_event",
                 "event_metadata",
                 "person",
                 "element",
@@ -18797,6 +18883,12 @@
                 {
                     "additionalProperties": false,
                     "properties": {
+                        "ch_table_names": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
                         "errors": {
                             "items": {
                                 "$ref": "#/definitions/HogQLNotice"
@@ -25774,6 +25866,8 @@
                 "data_warehouse_person_properties",
                 "elements",
                 "events",
+                "internal_events",
+                "internal_event_properties",
                 "event_properties",
                 "event_feature_flags",
                 "event_metadata",
