@@ -1,6 +1,7 @@
 import { useValues } from 'kea'
 
 import { RelatedGroups, RelatedGroupsProps } from 'scenes/groups/RelatedGroups'
+import { urls } from 'scenes/urls'
 
 import { NotebookNodeProps, NotebookNodeType } from '../types'
 import { createPostHogWidgetNode } from './NodeWrapper'
@@ -19,6 +20,13 @@ const Component = ({ attributes }: NotebookNodeProps<NotebookNodeRelatedGroupsAt
 
 type NotebookNodeRelatedGroupsAttributes = Pick<RelatedGroupsProps, 'id' | 'groupTypeIndex' | 'type'>
 
+const getHref = ({ id, groupTypeIndex }: NotebookNodeRelatedGroupsAttributes): string => {
+    if (typeof groupTypeIndex === 'number') {
+        return urls.group(groupTypeIndex, id, false, 'related')
+    }
+    return urls.personByUUID(id) + '#activeTab=related'
+}
+
 export const NotebookNodeRelatedGroups = createPostHogWidgetNode<NotebookNodeRelatedGroupsAttributes>({
     nodeType: NotebookNodeType.RelatedGroups,
     titlePlaceholder: 'Related groups',
@@ -26,6 +34,7 @@ export const NotebookNodeRelatedGroups = createPostHogWidgetNode<NotebookNodeRel
     resizeable: false,
     expandable: true,
     startExpanded: true,
+    href: getHref,
     attributes: {
         id: {},
         groupTypeIndex: {},
