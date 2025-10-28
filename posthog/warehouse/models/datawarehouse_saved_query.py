@@ -27,7 +27,6 @@ from posthog.warehouse.data_load.saved_query_service import (
     sync_saved_query_workflow,
     unpause_saved_query_schedule,
 )
-from posthog.warehouse.models.modeling import DataWarehouseModelPath
 from posthog.warehouse.models.util import (
     CLICKHOUSE_HOGQL_MAPPING,
     STR_TO_HOGQL_MAPPING,
@@ -116,6 +115,8 @@ class DataWarehouseSavedQuery(CreatedMetaFields, UUIDTModel, DeletedMetaFields):
         return self.name.split(".")
 
     def setup_model_paths(self):
+        from posthog.warehouse.models.modeling import DataWarehouseModelPath
+
         if not DataWarehouseModelPath.objects.filter(team=self.team, saved_query=self).exists():
             DataWarehouseModelPath.objects.create_from_saved_query(self)
         else:
