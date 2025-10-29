@@ -13,11 +13,10 @@ from posthog.hogql import ast
 from posthog.hogql.query import execute_hogql_query
 
 from posthog.hogql_queries.query_runner import AnalyticsQueryRunner
+from posthog.queries.trends.breakdown import BREAKDOWN_NULL_STRING_LABEL
 from posthog.utils import relative_date_parse
 
 logger = structlog.get_logger(__name__)
-
-POSTHOG_BREAKDOWN_NULL_VALUE = "$$_posthog_breakdown_null_$$"
 
 
 class ErrorTrackingBreakdownsQueryRunner(AnalyticsQueryRunner[ErrorTrackingBreakdownsQueryResponse]):
@@ -46,8 +45,6 @@ class ErrorTrackingBreakdownsQueryRunner(AnalyticsQueryRunner[ErrorTrackingBreak
         return relative_date_parse(date, ZoneInfo("UTC"), increase=True)
 
     def to_query(self) -> ast.SelectQuery:
-        # Build arrayJoin tuples for each breakdown property
-        # Each tuple is (property_name, property_value)
         array_elements: list[ast.Expr] = []
         for prop in self.query.breakdownProperties:
             tuple_elements = [
@@ -56,14 +53,13 @@ class ErrorTrackingBreakdownsQueryRunner(AnalyticsQueryRunner[ErrorTrackingBreak
                     name="ifNull",
                     args=[
                         ast.Call(name="toString", args=[ast.Field(chain=["properties", prop])]),
-                        ast.Constant(value=POSTHOG_BREAKDOWN_NULL_VALUE),
+                        ast.Constant(value=BREAKDOWN_NULL_STRING_LABEL),
                     ],
                 ),
             ]
             array_elements.append(ast.Tuple(exprs=tuple_elements))
 
-        # Innermost subquery: select breakdown tuples from events
-        innermost_select = ast.SelectQuery(
+        tuples_select = ast.SelectQuery(
             select=[
                 ast.Alias(
                     alias="breakdown_tuple",
@@ -71,11 +67,10 @@ class ErrorTrackingBreakdownsQueryRunner(AnalyticsQueryRunner[ErrorTrackingBreak
                 )
             ],
             select_from=ast.JoinExpr(table=ast.Field(chain=["events"])),
-            where=self._build_where_clause(),
+            where=self.tuples_select_where(),
         )
 
-        # Second level: extract tuple elements
-        second_select = ast.SelectQuery(
+        tuples_unpack_select = ast.SelectQuery(
             select=[
                 ast.Alias(
                     alias="breakdown_property",
@@ -90,11 +85,10 @@ class ErrorTrackingBreakdownsQueryRunner(AnalyticsQueryRunner[ErrorTrackingBreak
                     ),
                 ),
             ],
-            select_from=ast.JoinExpr(table=innermost_select),
+            select_from=ast.JoinExpr(table=tuples_select),
         )
 
-        # Third level: group by and count
-        third_select = ast.SelectQuery(
+        with_total_count_select = ast.SelectQuery(
             select=[
                 ast.Field(chain=["breakdown_property"]),
                 ast.Field(chain=["breakdown_value"]),
@@ -110,12 +104,11 @@ class ErrorTrackingBreakdownsQueryRunner(AnalyticsQueryRunner[ErrorTrackingBreak
                     ),
                 ),
             ],
-            select_from=ast.JoinExpr(table=second_select),
+            select_from=ast.JoinExpr(table=tuples_unpack_select),
             group_by=[ast.Field(chain=["breakdown_property"]), ast.Field(chain=["breakdown_value"])],
         )
 
-        # Fourth level: add row_number window function
-        fourth_select = ast.SelectQuery(
+        with_row_number_select = ast.SelectQuery(
             select=[
                 ast.Field(chain=["breakdown_property"]),
                 ast.Field(chain=["breakdown_value"]),
@@ -133,10 +126,9 @@ class ErrorTrackingBreakdownsQueryRunner(AnalyticsQueryRunner[ErrorTrackingBreak
                     ),
                 ),
             ],
-            select_from=ast.JoinExpr(table=third_select),
+            select_from=ast.JoinExpr(table=with_total_count_select),
         )
 
-        # Final select: filter by row number limit
         limit_value = self.query.limit if self.query.limit is not None else 3
         final_select = ast.SelectQuery(
             select=[
@@ -145,7 +137,7 @@ class ErrorTrackingBreakdownsQueryRunner(AnalyticsQueryRunner[ErrorTrackingBreak
                 ast.Field(chain=["count"]),
                 ast.Field(chain=["total_count"]),
             ],
-            select_from=ast.JoinExpr(table=fourth_select),
+            select_from=ast.JoinExpr(table=with_row_number_select),
             where=ast.CompareOperation(
                 left=ast.Field(chain=["rn"]), right=ast.Constant(value=limit_value), op=ast.CompareOperationOp.LtEq
             ),
@@ -157,10 +149,9 @@ class ErrorTrackingBreakdownsQueryRunner(AnalyticsQueryRunner[ErrorTrackingBreak
 
         return final_select
 
-    def _build_where_clause(self) -> ast.Expr:
+    def tuples_select_where(self) -> ast.Expr:
         conditions: list[ast.Expr] = []
 
-        # Filter by timestamp
         conditions.append(
             ast.CompareOperation(
                 left=ast.Field(chain=["timestamp"]),
@@ -176,14 +167,12 @@ class ErrorTrackingBreakdownsQueryRunner(AnalyticsQueryRunner[ErrorTrackingBreak
             )
         )
 
-        # Filter by event type
         conditions.append(
             ast.CompareOperation(
                 left=ast.Field(chain=["event"]), right=ast.Constant(value="$exception"), op=ast.CompareOperationOp.Eq
             )
         )
 
-        # Filter by issue ID
         conditions.append(
             ast.CompareOperation(
                 left=ast.Field(chain=["properties", "$exception_issue_id"]),
@@ -192,7 +181,6 @@ class ErrorTrackingBreakdownsQueryRunner(AnalyticsQueryRunner[ErrorTrackingBreak
             )
         )
 
-        # Filter test accounts if needed
         if self.query.filterTestAccounts:
             conditions.append(
                 ast.CompareOperation(
@@ -221,7 +209,6 @@ class ErrorTrackingBreakdownsQueryRunner(AnalyticsQueryRunner[ErrorTrackingBreak
                 limit_context=self.limit_context,
             )
 
-        # Group results by breakdown_property
         grouped_results: dict[str, dict] = {}
         for row in query_result.results:
             breakdown_property = str(row[0])
