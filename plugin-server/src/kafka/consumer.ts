@@ -896,6 +896,7 @@ export const parseEventHeaders = (headers?: MessageHeader[]): EventHeaders => {
 
     const result: EventHeaders = {
         force_disable_person_processing: false,
+        historical_migration: false,
     }
 
     headers?.forEach((header) => {
@@ -913,6 +914,8 @@ export const parseEventHeaders = (headers?: MessageHeader[]): EventHeaders => {
                 result.uuid = value
             } else if (key === 'force_disable_person_processing') {
                 result.force_disable_person_processing = value === 'true'
+            } else if (key === 'historical_migration') {
+                result.historical_migration = value === 'true'
             }
         })
     })
@@ -925,6 +928,7 @@ export const parseEventHeaders = (headers?: MessageHeader[]): EventHeaders => {
         'event',
         'uuid',
         'force_disable_person_processing',
+        'historical_migration',
     ] as const
     trackedHeaders.forEach((header) => {
         const status = result[header] ? 'present' : 'absent'

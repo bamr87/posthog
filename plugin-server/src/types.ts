@@ -895,6 +895,7 @@ export interface RawClickHouseEvent extends BaseEvent {
     group3_created_at?: ClickHouseTimestamp
     group4_created_at?: ClickHouseTimestamp
     person_mode: PersonMode
+    historical_migration: boolean
 }
 
 export interface RawKafkaEvent extends RawClickHouseEvent {
@@ -1375,6 +1376,7 @@ export interface EventHeaders {
     event?: string
     uuid?: string
     force_disable_person_processing: boolean
+    historical_migration: boolean
 }
 
 export interface IncomingEvent {
