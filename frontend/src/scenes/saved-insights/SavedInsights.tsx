@@ -410,7 +410,7 @@ export const QUERY_TYPES_METADATA: Record<NodeKind, InsightTypeMetadata> = {
     },
     [NodeKind.ErrorTrackingBreakdownsQuery]: {
         name: 'Error Tracking Breakdowns',
-        description: 'Breakdown error tracking issues by properties.',
+        description: 'Break down error tracking issues by properties.',
         icon: IconWarning,
         inMenu: false,
     },
