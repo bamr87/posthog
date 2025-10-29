@@ -12,7 +12,8 @@ import {
     TabsPrimitiveTrigger,
 } from 'lib/ui/TabsPrimitive/TabsPrimitive'
 import { preflightLogic } from 'scenes/PreflightCheck/preflightLogic'
-import { SceneExport } from 'scenes/sceneTypes'
+import { Scene, SceneExport } from 'scenes/sceneTypes'
+import { sceneConfigurations } from 'scenes/scenes'
 import { urls } from 'scenes/urls'
 
 import { SceneContent } from '~/layout/scenes/components/SceneContent'
@@ -25,7 +26,11 @@ import { ErrorTrackingIssueImpactTool } from '../../components/IssueImpactTool'
 import { issueQueryOptionsLogic } from '../../components/IssueQueryOptions/issueQueryOptionsLogic'
 import { ErrorTrackingSetupPrompt } from '../../components/SetupPrompt/SetupPrompt'
 import { exceptionIngestionLogic } from '../../components/SetupPrompt/exceptionIngestionLogic'
-import { ERROR_TRACKING_SCENE_LOGIC_KEY, errorTrackingSceneLogic } from './errorTrackingSceneLogic'
+import {
+    ERROR_TRACKING_SCENE_LOGIC_KEY,
+    ErrorTrackingSceneActiveTab,
+    errorTrackingSceneLogic,
+} from './errorTrackingSceneLogic'
 import { ImpactFilters } from './tabs/impact/ImpactFilters'
 import { ImpactList } from './tabs/impact/ImpactList'
 import { IssuesFilters } from './tabs/issues/IssuesFilters'
@@ -57,7 +62,7 @@ export function ErrorTrackingScene(): JSX.Element {
                             <div>
                                 <TabsPrimitive
                                     value={activeTab}
-                                    onValueChange={setActiveTab}
+                                    onValueChange={(value) => setActiveTab(value as ErrorTrackingSceneActiveTab)}
                                     className="border rounded bg-surface-primary"
                                 >
                                     <TabsPrimitiveList className="border-b">
@@ -104,9 +109,10 @@ const Header = (): JSX.Element => {
     return (
         <>
             <SceneTitleSection
-                name="Error tracking"
+                name={sceneConfigurations[Scene.ErrorTracking].name}
+                description={null}
                 resourceType={{
-                    type: 'error_tracking',
+                    type: sceneConfigurations[Scene.ErrorTracking].iconType || 'default_icon_type',
                 }}
                 actions={
                     <>

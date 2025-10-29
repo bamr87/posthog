@@ -8,8 +8,10 @@ from unittest.mock import patch
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
 
-from posthog.models import Dashboard, Experiment, FeatureFlag, Insight, Notebook, Project, Team, User
+from posthog.models import Dashboard, Experiment, FeatureFlag, Insight, Project, Team, User
 from posthog.models.file_system.file_system import FileSystem
+
+from products.notebooks.backend.models import Notebook
 
 from ee.models.rbac.access_control import AccessControl
 
@@ -940,6 +942,26 @@ class TestFileSystemAPI(APIBaseTest):
             self.assertEqual(resp.status_code, status.HTTP_200_OK, resp.json())
             self.assertEqual(resp.json()["count"], 1, f"Failed for query: {query}")
             self.assertEqual(resp.json()["results"][0]["path"], "Banana/go\\/revenue")
+
+    def test_search_allows_apostrophes(self):
+        """
+        Plain-text tokens that contain apostrophes should not trigger a search parser error.
+        """
+        FileSystem.objects.create(
+            team=self.team,
+            path="What's my homepage",
+            type="doc",
+            created_by=self.user,
+        )
+
+        response = self.client.get(
+            f"/api/projects/{self.team.id}/file_system/",
+            {"search": "what's home"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        self.assertEqual(response.json()["count"], 1)
+        self.assertEqual(response.json()["results"][0]["path"], "What's my homepage")
 
 
 @pytest.mark.ee  # Mark these tests to run only if EE code is available (for AccessControl)

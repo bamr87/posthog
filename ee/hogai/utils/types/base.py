@@ -1,12 +1,16 @@
 import uuid
 from collections.abc import Sequence
+from datetime import datetime
 from enum import StrEnum
-from typing import Annotated, Any, Literal, Optional, Self, TypeVar, Union
+from typing import Annotated, Any, Generic, Literal, Optional, Self, TypeVar, Union
 
 from langchain_core.agents import AgentAction
-from langchain_core.messages import BaseMessage as LangchainBaseMessage
+from langchain_core.messages import (
+    AIMessageChunk,
+    BaseMessage as LangchainBaseMessage,
+)
 from langgraph.graph import END, START
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from posthog.schema import (
     AssistantEventType,
@@ -17,6 +21,8 @@ from posthog.schema import (
     AssistantRetentionQuery,
     AssistantToolCallMessage,
     AssistantTrendsQuery,
+    AssistantUpdateEvent,
+    ContextMessage,
     FailureMessage,
     FunnelsQuery,
     HogQLQuery,
@@ -43,18 +49,20 @@ AIMessageUnion = Union[
     AssistantMessage,
     VisualizationMessage,
     FailureMessage,
-    ReasoningMessage,
     AssistantToolCallMessage,
+    MultiVisualizationMessage,
+    ReasoningMessage,
     PlanningMessage,
     TaskExecutionMessage,
-    MultiVisualizationMessage,
 ]
-AssistantMessageUnion = Union[HumanMessage, AIMessageUnion, NotebookUpdateMessage]
-AssistantMessageOrStatusUnion = Union[AssistantMessageUnion, AssistantGenerationStatusEvent]
+AssistantMessageUnion = Union[HumanMessage, AIMessageUnion, NotebookUpdateMessage, ContextMessage]
+AssistantResultUnion = Union[AssistantMessageUnion, AssistantUpdateEvent, AssistantGenerationStatusEvent]
 
 AssistantOutput = (
     tuple[Literal[AssistantEventType.CONVERSATION], Conversation]
-    | tuple[Literal[AssistantEventType.MESSAGE], AssistantMessageOrStatusUnion]
+    | tuple[Literal[AssistantEventType.MESSAGE], AssistantMessageUnion]
+    | tuple[Literal[AssistantEventType.STATUS], AssistantGenerationStatusEvent]
+    | tuple[Literal[AssistantEventType.UPDATE], AssistantUpdateEvent]
 )
 
 AnyAssistantGeneratedQuery = (
@@ -77,11 +85,12 @@ ASSISTANT_MESSAGE_TYPES = (
     AssistantMessage,
     VisualizationMessage,
     FailureMessage,
-    ReasoningMessage,
     AssistantToolCallMessage,
+    MultiVisualizationMessage,
+    ContextMessage,
+    ReasoningMessage,
     PlanningMessage,
     TaskExecutionMessage,
-    MultiVisualizationMessage,
 )
 
 
@@ -96,8 +105,17 @@ def append(left: Sequence, right: Sequence) -> Sequence:
     return [*left, *right]
 
 
+T = TypeVar("T")
+
+
+class ReplaceMessages(Generic[T], list[T]):
+    """
+    Replaces the existing messages with the new messages.
+    """
+
+
 def add_and_merge_messages(
-    left: Sequence[AssistantMessageUnion], right: Sequence[AssistantMessageUnion]
+    left_value: Sequence[AssistantMessageUnion], right_value: Sequence[AssistantMessageUnion]
 ) -> Sequence[AssistantMessageUnion]:
     """Merges two lists of messages, updating existing messages by ID.
 
@@ -115,8 +133,8 @@ def add_and_merge_messages(
         message from `right` will replace the message from `left`.
     """
     # coerce to list
-    left = list(left)
-    right = list(right)
+    left = list(left_value)
+    right = list(right_value)
 
     # assign missing ids
     for m in left:
@@ -126,7 +144,9 @@ def add_and_merge_messages(
         if m.id is None:
             m.id = str(uuid.uuid4())
 
-    # merge
+    if isinstance(right_value, ReplaceMessages):
+        return right
+
     left_idx_by_id = {m.id: i for i, m in enumerate(left)}
     merged = left.copy()
     for m in right:
@@ -134,7 +154,6 @@ def add_and_merge_messages(
             merged[existing_idx] = m
         else:
             merged.append(m)
-
     return merged
 
 
@@ -180,8 +199,9 @@ class TaskResult(BaseModel):
     The result of an individual task.
     """
 
+    model_config = ConfigDict(extra="ignore")
+
     id: str
-    description: str
     result: str
     artifacts: Sequence[TaskArtifact] = Field(default=[])
     status: TaskExecutionStatus
@@ -215,6 +235,10 @@ class BaseStateWithMessages(BaseState):
     """
     The ID of the message from which the conversation started.
     """
+    start_dt: Optional[datetime] = Field(default=None)
+    """
+    The datetime of the start of the conversation. Use this datetime to keep the cache.
+    """
     graph_status: Optional[Literal["resumed", "interrupted", ""]] = Field(default=None)
     """
     Whether the graph was interrupted or resumed.
@@ -228,7 +252,7 @@ class BaseStateWithMessages(BaseState):
 class BaseStateWithTasks(BaseState):
     tasks: Annotated[Optional[list[TaskExecutionItem]], replace] = Field(default=None)
     """
-    The current tasks.
+    Deprecated.
     """
     task_results: Annotated[list[TaskResult], append] = Field(default=[])  # pyright: ignore[reportUndefinedVariable]
     """
@@ -331,6 +355,10 @@ class _SharedAssistantState(BaseStateWithMessages, BaseStateWithIntermediateStep
     """
     The user's queries to search for insights.
     """
+    dashboard_id: Optional[int] = Field(default=None)
+    """
+    The ID of the dashboard to be edited.
+    """
 
 
 class AssistantState(_SharedAssistantState):
@@ -399,3 +427,25 @@ class WithCommentary(BaseModel):
     commentary: str = Field(
         description="A commentary on what you are doing, using the first person: 'I am doing this because...'"
     )
+
+
+class MessageAction(BaseModel):
+    type: Literal["MESSAGE"] = "MESSAGE"
+    message: AssistantMessageUnion
+
+
+class MessageChunkAction(BaseModel):
+    type: Literal["MESSAGE_CHUNK"] = "MESSAGE_CHUNK"
+    message: AIMessageChunk
+
+
+class NodeStartAction(BaseModel):
+    type: Literal["NODE_START"] = "NODE_START"
+
+
+AssistantActionUnion = MessageAction | MessageChunkAction | NodeStartAction
+
+
+class AssistantDispatcherEvent(BaseModel):
+    action: AssistantActionUnion = Field(discriminator="type")
+    node_name: str
