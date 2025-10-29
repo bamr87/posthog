@@ -33,8 +33,6 @@ export const miniBreakdownsLogic = kea<miniBreakdownsLogicType>([
             null as ErrorTrackingBreakdownsQueryResponse | null,
             {
                 loadResponse: async () => {
-                    await new Promise((resolve) => setTimeout(resolve, 2_000))
-
                     return await api.query(
                         errorTrackingBreakdownsQuery({
                             issueId: props.issueId,
