@@ -40,6 +40,7 @@ import {
     createResolveTeamStep,
     createValidateEventPropertiesStep,
     createValidateEventUuidStep,
+    createValidateHistoricalMigrationStep,
 } from './event-preprocessing'
 import { createEmitEventStep } from './event-processing/emit-event-step'
 import { createEventPipelineRunnerV1Step } from './event-processing/event-pipeline-runner-v1-step'
@@ -255,6 +256,7 @@ export class IngestionConsumer {
                         .pipe(createParseKafkaMessageStep())
                         .pipe(createDropExceptionEventsStep())
                         .pipe(createResolveTeamStep(this.hub))
+                        .pipe(createValidateHistoricalMigrationStep())
                 )
             )
             // We want to handle the first batch of rejected events, so that the remaining ones
