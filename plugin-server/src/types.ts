@@ -1375,6 +1375,7 @@ export interface EventHeaders {
     timestamp?: string
     event?: string
     uuid?: string
+    now?: string
     force_disable_person_processing: boolean
     historical_migration: boolean
 }

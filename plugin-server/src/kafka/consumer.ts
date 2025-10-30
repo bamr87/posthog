@@ -912,6 +912,8 @@ export const parseEventHeaders = (headers?: MessageHeader[]): EventHeaders => {
                 result.event = value
             } else if (key === 'uuid') {
                 result.uuid = value
+            } else if (key === 'now') {
+                result.now = value
             } else if (key === 'force_disable_person_processing') {
                 result.force_disable_person_processing = value === 'true'
             } else if (key === 'historical_migration') {
@@ -927,6 +929,7 @@ export const parseEventHeaders = (headers?: MessageHeader[]): EventHeaders => {
         'timestamp',
         'event',
         'uuid',
+        'now',
         'force_disable_person_processing',
         'historical_migration',
     ] as const
