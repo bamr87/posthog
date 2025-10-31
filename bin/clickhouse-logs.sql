@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION extract_ipv4_substrings AS
+CREATE OR REPLACE FUNCTION extractIPv4Substrings AS
 (
   body -> extractAll(body, '(\d\.((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){2,2}([0-9]))')
 );

@@ -206,10 +206,9 @@ class LogsQueryRunner(AnalyticsQueryRunner[LogsQueryResponse]):
             )
             # ip addresses are particularly bad at full text searches with our ngram 3 index
             # match them separately against a materialized column of ip addresses
-            # regex must be kept in sync with the regex used in the materialized column
             exprs.append(
                 parse_expr(
-                    r"indexHint(hasAll(mat_body_ipv4_matches, extractAll({searchTerm}, '(\d\.((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){2,2}([0-9]))')))",
+                    "indexHint(hasAll(mat_body_ipv4_matches, extractIPv4Substrings({searchTerm})))",
                     placeholders={"searchTerm": ast.Constant(value=f"{self.query.searchTerm}")},
                 )
             )
