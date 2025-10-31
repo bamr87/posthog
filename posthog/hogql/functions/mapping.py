@@ -168,7 +168,6 @@ HOGQL_CLICKHOUSE_FUNCTIONS: dict[str, HogQLFunctionMeta] = {
     "formatReadableTimeDelta": HogQLFunctionMeta("formatReadableTimeDelta", 1, 2),
     "least": HogQLFunctionMeta("least", 2, 2, case_sensitive=False),
     "greatest": HogQLFunctionMeta("greatest", 2, 2, case_sensitive=False),
-    "extract_ipv4_substrings": HogQLFunctionMeta("extract_ipv4_substrings", 1, 1),
     "indexHint": HogQLFunctionMeta("indexHint", 1, 1),
     # time window
     "tumble": HogQLFunctionMeta("tumble", 2, 2),
