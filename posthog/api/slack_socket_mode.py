@@ -19,6 +19,7 @@ from posthog.schema import (
     AssistantHogQLQuery,
     InsightVizNode,
     VisualizationMessage,
+    FailureMessage,
 )
 from ee.models.assistant import Conversation
 from ee.hogai.stream.conversation_stream import ConversationStreamManager
@@ -81,6 +82,17 @@ class SlackSocketModeClient:
     async def _handle_max_ai_async(self, channel: str, text: str, thread_ts: str):
         user = await User.objects.alast()  # TODO
         team = await Team.objects.alast()  # TODO
+        if not user or not team:
+            logger.error("No user or team found")
+            self.web_client.chat_postMessage(
+                channel=channel,
+                thread_ts=thread_ts,
+                text="Sorry, I couldn't find a user or team to process this request.",
+                username="PostHog Max",
+                icon_emoji=":hedgehog:",
+            )
+            return
+
         try:
             # Create conversation
             conversation_id = uuid4()
@@ -95,7 +107,7 @@ class SlackSocketModeClient:
                 message=message.model_dump(),
                 contextual_tools=None,
                 is_new_conversation=True,
-                trace_id=uuid4(),
+                trace_id=str(uuid4()),
                 session_id=None,
                 mode=AssistantMode.ASSISTANT,
                 billing_context=None,
@@ -107,14 +119,26 @@ class SlackSocketModeClient:
                 AssistantTrendsQuery | AssistantFunnelsQuery | AssistantRetentionQuery | AssistantHogQLQuery | None
             ) = None
             async for event_type, payload in stream_manager.astream(workflow_inputs):
-                # Only handle message events, filter out value and debug updates
+                # Only handle MESSAGE events - these contain the actual content to display
                 if event_type == AssistantEventType.MESSAGE:
-                    if isinstance(payload, VisualizationMessage):
-                        generated_query = payload.answer
-                    if isinstance(payload, AssistantMessage) and payload.id:  # ID means the message has been finalized
+                    # Capture finalized visualizations for attaching to next assistant message
+                    if isinstance(payload, VisualizationMessage) and payload.id:
+                        # Only capture Assistant* query types (not the non-Assistant variants)
+                        if isinstance(
+                            payload.answer,
+                            (AssistantTrendsQuery, AssistantFunnelsQuery, AssistantRetentionQuery, AssistantHogQLQuery),
+                        ):
+                            generated_query = payload.answer
+
+                    # Post finalized assistant messages to Slack
+                    if isinstance(payload, AssistantMessage) and payload.id:
                         content = str(payload.content)
+
+                        # Add spinner emoji if assistant has pending tool calls
                         if getattr(payload, "tool_calls", None):
                             content += " 🔄"
+
+                        # Attach query link if we have a pending visualization
                         if generated_query is not None:
                             if isinstance(generated_query, AssistantHogQLQuery):
                                 new_insight_url = absolute_uri(
@@ -122,7 +146,7 @@ class SlackSocketModeClient:
                                 )
                             else:
                                 insight_viz_json = InsightVizNode.model_construct(
-                                    source=generated_query
+                                    source=generated_query  # type: ignore
                                 ).model_dump_json(exclude_none=True)
                                 new_insight_url = absolute_uri(
                                     # For some god-forsaken frontend reason it's important
@@ -131,7 +155,8 @@ class SlackSocketModeClient:
                                     f"/project/{team.id}/insights/new#q={quote(insight_viz_json)}%20"
                                 )
                             content += f" <{new_insight_url}|Query right here.>"
-                        generated_query = None  # Reset back again
+                            generated_query = None  # Reset after attaching to message
+
                         self.web_client.chat_postMessage(
                             channel=channel,
                             thread_ts=thread_ts,
@@ -139,6 +164,37 @@ class SlackSocketModeClient:
                             username="PostHog Max",
                             icon_emoji=":hedgehog:",
                         )
+
+                    # Handle failures
+                    if isinstance(payload, FailureMessage) and payload.id:
+                        self.web_client.chat_postMessage(
+                            channel=channel,
+                            thread_ts=thread_ts,
+                            text=payload.content or "Sorry, I encountered an error processing your request.",
+                            username="PostHog Max",
+                            icon_emoji=":hedgehog:",
+                        )
+
+            # Post any remaining visualization that wasn't followed by an assistant message
+            if generated_query is not None:
+                if isinstance(generated_query, AssistantHogQLQuery):
+                    new_insight_url = absolute_uri(
+                        f"/project/{team.id}/sql?open_query={quote(generated_query.query)}"
+                    )
+                else:
+                    insight_viz_json = InsightVizNode.model_construct(
+                        source=generated_query  # type: ignore
+                    ).model_dump_json(exclude_none=True)
+                    new_insight_url = absolute_uri(
+                        f"/project/{team.id}/insights/new#q={quote(insight_viz_json)}%20"
+                    )
+                self.web_client.chat_postMessage(
+                    channel=channel,
+                    thread_ts=thread_ts,
+                    text=f"<{new_insight_url}|Query right here.>",
+                    username="PostHog Max",
+                    icon_emoji=":hedgehog:",
+                )
 
         except Exception as e:
             logger.exception("Error handling Max AI request", error=e)
