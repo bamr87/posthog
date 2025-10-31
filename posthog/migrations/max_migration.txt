@@ -1,1 +1,1 @@
-0894_add_realtime_cohort_support
+0895_add_cohort_type

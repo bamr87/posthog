@@ -2222,6 +2222,8 @@ export interface ErrorTrackingQuery extends DataNode<ErrorTrackingQueryResponse>
     limit?: integer
     offset?: integer
     personId?: string
+    groupKey?: string
+    groupTypeIndex?: integer
 }
 
 export interface ErrorTrackingSimilarIssuesQuery extends DataNode<ErrorTrackingSimilarIssuesQueryResponse> {
@@ -2552,6 +2554,7 @@ export type FileSystemIconType =
     | 'data_warehouse'
     | 'task'
     | 'link'
+    | 'live_debugger'
     | 'logs'
     | 'workflows'
     | 'notebook'
@@ -3535,6 +3538,8 @@ export interface TracesQuery extends DataNode<TracesQueryResponse> {
     properties?: AnyPropertyFilter[]
     /** Person who performed the event */
     personId?: string
+    groupKey?: string
+    groupTypeIndex?: integer
 }
 
 export interface TraceQueryResponse extends AnalyticsQueryResponseBase {

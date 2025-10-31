@@ -1450,6 +1450,7 @@ class FileSystemIconType(StrEnum):
     DATA_WAREHOUSE = "data_warehouse"
     TASK = "task"
     LINK = "link"
+    LIVE_DEBUGGER = "live_debugger"
     LOGS = "logs"
     WORKFLOWS = "workflows"
     NOTEBOOK = "notebook"
@@ -11633,6 +11634,8 @@ class TracesQuery(BaseModel):
     )
     dateRange: Optional[DateRange] = None
     filterTestAccounts: Optional[bool] = None
+    groupKey: Optional[str] = None
+    groupTypeIndex: Optional[int] = None
     kind: Literal["TracesQuery"] = "TracesQuery"
     limit: Optional[int] = None
     modifiers: Optional[HogQLQueryModifiers] = Field(
@@ -13403,6 +13406,8 @@ class ErrorTrackingQuery(BaseModel):
     dateRange: DateRange
     filterGroup: Optional[PropertyGroupFilter] = None
     filterTestAccounts: Optional[bool] = None
+    groupKey: Optional[str] = None
+    groupTypeIndex: Optional[int] = None
     issueId: Optional[str] = None
     kind: Literal["ErrorTrackingQuery"] = "ErrorTrackingQuery"
     limit: Optional[int] = None

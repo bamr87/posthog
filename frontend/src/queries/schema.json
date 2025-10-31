@@ -11176,6 +11176,12 @@
                 "filterTestAccounts": {
                     "type": "boolean"
                 },
+                "groupKey": {
+                    "type": "string"
+                },
+                "groupTypeIndex": {
+                    "$ref": "#/definitions/integer"
+                },
                 "issueId": {
                     "type": "string"
                 },
@@ -13530,6 +13536,7 @@
                 "data_warehouse",
                 "task",
                 "link",
+                "live_debugger",
                 "logs",
                 "workflows",
                 "notebook",
@@ -26603,6 +26610,12 @@
                 },
                 "filterTestAccounts": {
                     "type": "boolean"
+                },
+                "groupKey": {
+                    "type": "string"
+                },
+                "groupTypeIndex": {
+                    "$ref": "#/definitions/integer"
                 },
                 "kind": {
                     "const": "TracesQuery",
