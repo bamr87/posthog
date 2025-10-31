@@ -2623,6 +2623,8 @@ export type InsightQueryNode =
     | PathsQuery
     | StickinessQuery
     | LifecycleQuery
+    | WebStatsTableQuery
+    | WebOverviewQuery
 
 export interface ExperimentVariantTrendsBaseStats {
     key: string
