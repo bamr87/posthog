@@ -17,6 +17,8 @@ postgres = PostgresSource()
 
 @SourceRegistry.register
 class SupabaseSource(BaseSource[SupabaseSourceConfig], SSHTunnelMixin, ValidateDatabaseHostMixin):
+    source_name = "Supabase"  # used in error logs to differentiate this from postgres source
+
     @property
     def source_type(self) -> ExternalDataSourceType:
         return ExternalDataSourceType.SUPABASE
