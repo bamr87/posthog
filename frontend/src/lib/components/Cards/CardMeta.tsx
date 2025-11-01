@@ -1,7 +1,7 @@
 import './CardMeta.scss'
 
 import clsx from 'clsx'
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { Transition } from 'react-transition-group'
 
 import { IconPieChart } from '@posthog/icons'
@@ -57,10 +57,29 @@ export function CardMeta({
     samplingFactor,
     extraControls,
 }: CardMetaProps): JSX.Element {
-    const { ref: primaryRef, width: primaryWidth } = useResizeObserver()
+    const [availableDetailsHeight, setAvailableDetailsHeight] = useState(Infinity)
+    const [showDetailsButtonLabel, setShowDetailsButtonLabel] = useState(false)
+    const primaryRef = useRef<HTMLDivElement>(null)
+    useResizeObserver({
+        ref: primaryRef,
+        onResize: ({ width: primaryWidth, height: primaryHeight }) => {
+            setShowDetailsButtonLabel(!!primaryWidth && primaryWidth >= 480)
+            if (!primaryHeight) {
+                setAvailableDetailsHeight(Infinity) // Reset back to unbounded
+                return
+            }
+            const parentCard = primaryRef.current?.parentElement?.parentElement
+            if (!parentCard?.classList.contains('InsightCard')) {
+                console.warn(
+                    'CardMeta details height cannot be bounded, as parent of parent is unexpectedly not an .InsightCard:',
+                    parentCard
+                )
+                return
+            }
+            setAvailableDetailsHeight(parentCard.clientHeight - primaryRef.current!.clientHeight - 3) // 3px for shadow
+        },
+    })
     const { ref: detailsRef, height: detailsHeight } = useResizeObserver()
-
-    const showDetailsButtonLabel = !!primaryWidth && primaryWidth > 480
 
     return (
         <div className={clsx('CardMeta', className, areDetailsShown && 'CardMeta--details-shown')}>
@@ -72,7 +91,7 @@ export function CardMeta({
                     )}
                 <div className="CardMeta__main">
                     <div className="CardMeta__top">
-                        <h5>
+                        <h5 className="flex items-center">
                             {topHeading}
                             {samplingFactor && samplingFactor < 1 && (
                                 <Tooltip
@@ -80,7 +99,7 @@ export function CardMeta({
                                     placement="right"
                                 >
                                     <IconPieChart
-                                        className="ml-1.5 text-base align-[-0.25em]"
+                                        className="ml-1.5 text-base shrink-0"
                                         style={{ color: 'var(--primary-3000-hover)' }}
                                     />
                                 </Tooltip>
@@ -119,7 +138,7 @@ export function CardMeta({
                 className="CardMeta__details"
                 // eslint-disable-next-line react/forbid-dom-props
                 style={{
-                    height: areDetailsShown && detailsHeight ? detailsHeight + 1 : 0,
+                    height: areDetailsShown && detailsHeight ? Math.min(detailsHeight + 2, availableDetailsHeight) : 0,
                 }}
             >
                 {/* By using a transition about displaying then we make sure we aren't rendering the content when not needed */}
