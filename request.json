@@ -1,0 +1,456 @@
+{
+    "messages": [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "<system_reminder>\nContextual tools that are available to you on this page are:\n<navigate>\nYou're currently on the /project/1/replay/home page. You can navigate around the PostHog app using the `navigate` tool.\n</navigate>\n<search_session_recordings>\nCurrent recordings filters are: {\"date_from\": \"-3d\", \"date_to\": null, \"duration\": [{\"key\": \"active_seconds\", \"operator\": \"gt\", \"type\": \"recording\", \"value\": 5}], \"filter_group\": {\"type\": \"AND\", \"values\": [{\"type\": \"AND\", \"values\": []}]}, \"filter_test_accounts\": false, \"order\": \"start_time\", \"order_direction\": \"DESC\"}\n</search_session_recordings>\nIMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\n</system_reminder>"
+                },
+                {
+                    "type": "text",
+                    "text": "I'll update the session recordings filters to show recordings from French users, who have email @posthog.com"
+                }
+            ]
+        },
+        {
+            "role": "assistant",
+            "content": [
+                {
+                    "thinking": "The user wants to update the session recordings filters to show:\n1. Recordings from French users\n2. Users who have email @posthog.com\n\nI'm currently on the session recordings page, and I can see the current filters. I should use the `search_session_recordings` tool to update these filters according to the user's request.\n\nI need to pass a description of the change that includes:\n- Filter for French users (likely by a location/country property)\n- Filter for users with email containing @posthog.com\n\nLet me call the tool with these requirements.",
+                    "type": "thinking",
+                    "signature": "Es4FCkYICRgCKkCnjTJN3L4VtcI66fLJArXk+xjyfy2/Q6y9bC1UAcr5ze6vh6QpB1GjeA2CPpx8CzhIklxVdSIRMfSIPmIdXiBlEgxik9ySqk1w9+yBMpcaDERvwuWJDaRpW9BfrCIwESIHzIw82cXPxn1oY5QGapBhfGGz5CYaN8E8sCflrYUpMJc4vp25Uj8xmLXe0qCIKrUELVNp7xzm7ua/upVEDq/mYcA9IE/z6Hc0AlCNTzbQ377+Ho2etkVwRe5AhVUW/pdVIV4oCGMMXaui47sk+Uz/IDeMVJGqa8lCo3zcAzr0je5PCzKIVi013q7ejrMrJeoiNf/VFo5I/EByKrU7jakzNw4lFN4mMCYNlasjst9jSvEkj98qOU8AH6eAlVQjI6KwdZ6Jew8Ppsd2QG2xg/PH1UcpD/3KWwpGirjqu7bsxrXo2UG4nO1WjZItyh7mPiUA0aDkkcBPreF65fTuqIwmDAD94llklmm1Pe2DI03rQ5sCgmlkSEQDb8el/QiwIvCIFl86pUznuhHy3QbViH6PG6HeHkIRLzvUNMU+zOFtqYvsbrD/8XtC6N4/wO2n3nikcRiC2CLKjnoMNvv5SRTzbBH8s/NA2jMBqOntnlsbAY3V88tDlnqHcG+KF+YsPtP22UNEqL0ruxQGOgY+hQr84zZOe6NFoEKx+IXTlqtBpNoaU3LhZ9ER1Zgu4CARNOjLgyY/L6MrHUApwRcjKXTIjTqTAl1Fdh6SI6FTe7qmHrP3yZkJJlyW9E1KppB9WMgRxNjJbkaKGzLS6ZJ9Ny2fnQQuUpVFSoXIMco/VF/SiRueZwX/QW0S8jE6V6pgWy6vfk8T+PlMsERmEEPFp3kuKB+i5ihCWR93PhpUk6fmchtsoA3gwX0dc8CFo6ARacHXVO3hnwxMhYPkxbhqnbQSmzz4Q+kT06KJxsqdp26qfw6XvizlHhgB"
+                },
+                {
+                    "type": "text",
+                    "text": "I'll update the session recordings filters to show recordings from French users with @posthog.com email addresses."
+                },
+                {
+                    "type": "tool_use",
+                    "name": "search_session_recordings",
+                    "input": {
+                        "change": "Show recordings from French users (country = France) who have email addresses ending with @posthog.com"
+                    },
+                    "id": "toolu_01YEvEeDjHRggjhq54pxBjrj"
+                }
+            ]
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "tool_result",
+                    "tool_use_id": "toolu_01YEvEeDjHRggjhq54pxBjrj",
+                    "content": "✅ Updated session recordings filters."
+                }
+            ]
+        },
+        {
+            "role": "assistant",
+            "content": [
+                {
+                    "thinking": "Great! The filters have been updated successfully. The tool has applied the filters to show session recordings from French users with @posthog.com email addresses.",
+                    "type": "thinking",
+                    "signature": "Es0CCkYICRgCKkAyl/klHsS5rOeUdv15bVU1A2pcJYe4m175iHI//4OpZ8W0HtG0pyDTMPlqXUGxwaQwWh78txMou81y8i5igOFaEgyK0BLkN5XRdvdSB1waDOLvKdN3pFaCGpph2iIwPgZrAUIZuzS2ix/RcWqt7UG2GLv2NFwsre7goC0+SfXpS+6pTO4FA8pNcGVo5LxuKrQBdR3DMDlRmQYaFnJmm0M6/ngFiC6Ft6iOu6k9GUSgd49cnvU0PlyE0naQHxZ96JE5RFFkd4So8aAlPP8nB3YjUGF/rsoOSu47AvmzgHJzfSvEn5fIZI85hsWSpLeA08UGEeU/Q3Pj4hMLIRZ4YJENXkJkP7vzGndCG0BCCmtJCiLDcvMucJYME27u9E8Gui8iCDV+IJ6VZ7NkGkdBIa5QLRDpl9qnCGsYDCPg3YdqTxJ43CDIGAE="
+                },
+                {
+                    "type": "text",
+                    "text": "Done! I've updated the filters to show session recordings from French users with @posthog.com email addresses."
+                }
+            ]
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Add like 8 more random filters on various properties of your choice, for testing purposes"
+                }
+            ]
+        },
+        {
+            "role": "assistant",
+            "content": [
+                {
+                    "thinking": "The user wants me to add 8 more random filters to the session recordings for testing purposes. I should add a variety of different filters using various property types - could include browser, OS, device type, screen size, referrer, page views, events performed, etc. Let me come up with a diverse set of filters that would be realistic for testing.",
+                    "type": "thinking",
+                    "signature": "EocECkYICRgCKkCkHZhwWZKZkKZv8HeelvFWZFSqwdXU004+aDRId8oXRUUjb4AWTMyW9aT5R+FCQ9SILAhTpr0AF95Ar3MdlYD6EgyiRNzSRJ5tgdDnR0QaDKjpsdqiGTSiSOfxLiIwnnQtA5+CVhZbGHF+dCSSPsWJUBSXgeKmvOaGZ7/0jZKl9q8ed23uNmYtPaOX5QXxKu4Cr2SA9iSbgVm80wH7kdHavgaLzZbBOZ+nh2kJrrJ5aIlrPTNXJldcw1mr2nhE6CAnDMEjbncxyXty5HZPhGjkx9nddE0YYTXjGZMdmAX2/yCT32VLPulAQYqRtoCCtPuFmK93mVRjkIrioh0131qVdBGClWYQ1ZvEuAH6zWG1MQ90ontjS4UbZ4X/VSrJ3HK6q3jCz7epxBpZg9ES2D9J6n2Z0dwa9OhDi9ZRNBa1H3nvU+sGSj+pGSLEuo6iObV9CbEPZDIeGrOAjCL1OCP+ErzYP4tWh62EX3FYPshSQK4W8hn5qkozBularO4LmFwcJXlp1jlnswPLWeqavVDx4PTd2czvxkgWX5yvUMJ+1LIzqgSl2f/U8/3Ow5s/VV/YHI9WPZKjnNQ749uTRKzXbq3yYmiIKh66psVT6cz9iTc6+Fe8hVqnmR2TsLlpEjodKeyvebSgHJDF2SQrGl+83rHrrUSK7AYE2TxA0C6kGAE="
+                },
+                { "type": "text", "text": "I'll add 8 more random filters to test the session recordings filtering." },
+                {
+                    "type": "tool_use",
+                    "name": "search_session_recordings",
+                    "input": {
+                        "change": "Keep existing filters (French users with @posthog.com email) and add these additional filters:\n1. Browser is Chrome or Firefox\n2. OS is Mac OS X\n3. Device type is Desktop\n4. Screen width is greater than 1200 pixels\n5. Duration is greater than 30 seconds\n6. Performed event \"pageview\" at least 3 times\n7. Visited URL contains \"/insights\"\n8. Session start time is between 9 AM and 5 PM UTC"
+                    },
+                    "id": "toolu_018KW6DgaDXjSFPSH5D2gUNw"
+                }
+            ]
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "tool_result",
+                    "tool_use_id": "toolu_018KW6DgaDXjSFPSH5D2gUNw",
+                    "content": "✅ Updated session recordings filters.",
+                    "cache_control": { "type": "ephemeral" }
+                }
+            ]
+        }
+    ],
+    "model": "claude-sonnet-4-5",
+    "thinking": { "type": "enabled", "budget_tokens": 1024 },
+    "tools": [
+        {
+            "name": "read_taxonomy",
+            "input_schema": {
+                "properties": {
+                    "query": {
+                        "anyOf": [
+                            {
+                                "description": "Returns the list of available events. Events are sorted by their popularity where the most popular events are at the top.",
+                                "properties": {
+                                    "kind": {
+                                        "const": "events",
+                                        "default": "events",
+                                        "title": "Kind",
+                                        "type": "string"
+                                    }
+                                },
+                                "title": "ReadEvents",
+                                "type": "object"
+                            },
+                            {
+                                "description": "Returns the properties list for a provided event. Before calling this tool, ensure the event exists by reading events.",
+                                "properties": {
+                                    "kind": {
+                                        "const": "event_properties",
+                                        "default": "event_properties",
+                                        "title": "Kind",
+                                        "type": "string"
+                                    },
+                                    "event_name": {
+                                        "description": "The name of the event that you want to retrieve properties for.",
+                                        "title": "Event Name",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["event_name"],
+                                "title": "ReadEventProperties",
+                                "type": "object"
+                            },
+                            {
+                                "description": "For a provided event and a property, returns a list of maximum 25 sample values that the combination has.",
+                                "properties": {
+                                    "kind": {
+                                        "const": "event_property_values",
+                                        "default": "event_property_values",
+                                        "title": "Kind",
+                                        "type": "string"
+                                    },
+                                    "event_name": {
+                                        "description": "Verified event name",
+                                        "title": "Event Name",
+                                        "type": "string"
+                                    },
+                                    "property_name": {
+                                        "description": "Verified property name of an event.",
+                                        "title": "Property Name",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["event_name", "property_name"],
+                                "title": "ReadEventSamplePropertyValues",
+                                "type": "object"
+                            },
+                            {
+                                "properties": {
+                                    "kind": {
+                                        "const": "entity_properties",
+                                        "default": "entity_properties",
+                                        "title": "Kind",
+                                        "type": "string"
+                                    },
+                                    "entity": {
+                                        "description": "The type of the entity that you want to retrieve properties for.",
+                                        "enum": ["person", "session", "account", "instance", "organization", "project"],
+                                        "title": "Entity",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["entity"],
+                                "title": "ReadEntityProperties",
+                                "type": "object"
+                            },
+                            {
+                                "properties": {
+                                    "kind": {
+                                        "const": "entity_property_values",
+                                        "default": "entity_property_values",
+                                        "title": "Kind",
+                                        "type": "string"
+                                    },
+                                    "entity": {
+                                        "description": "The type of the entity that you want to retrieve properties for.",
+                                        "enum": ["person", "session", "account", "instance", "organization", "project"],
+                                        "title": "Entity",
+                                        "type": "string"
+                                    },
+                                    "property_name": {
+                                        "description": "Verified property name of an entity.",
+                                        "title": "Property Name",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["entity", "property_name"],
+                                "title": "ReadEntitySamplePropertyValues",
+                                "type": "object"
+                            },
+                            {
+                                "description": "Returns the properties list for a provided action. Before calling this tool, ensure the action exists by searching actions or if it was provided in the context.",
+                                "properties": {
+                                    "kind": {
+                                        "const": "action_properties",
+                                        "default": "action_properties",
+                                        "title": "Kind",
+                                        "type": "string"
+                                    },
+                                    "action_id": { "title": "Action Id", "type": "integer" }
+                                },
+                                "required": ["action_id"],
+                                "title": "ReadActionProperties",
+                                "type": "object"
+                            },
+                            {
+                                "description": "For a provided event and a property, returns a list of maximum 25 sample values that the combination has.",
+                                "properties": {
+                                    "kind": {
+                                        "const": "action_property_values",
+                                        "default": "action_property_values",
+                                        "title": "Kind",
+                                        "type": "string"
+                                    },
+                                    "action_id": {
+                                        "description": "Verified action ID",
+                                        "title": "Action Id",
+                                        "type": "integer"
+                                    },
+                                    "property_name": {
+                                        "description": "Verified property name of an action.",
+                                        "title": "Property Name",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["action_id", "property_name"],
+                                "title": "ReadActionSamplePropertyValues",
+                                "type": "object"
+                            }
+                        ]
+                    }
+                },
+                "required": ["query"],
+                "type": "object"
+            },
+            "description": "Use this tool to explore the user's taxonomy (i.e. data schema).\nThe user implements PostHog SDKs to collect events, properties, and property values. They are used by users to create insights with visualizations, SQL queries, watch session recordings, filter data, target particular users or groups by traits or behavior, etc.\nEach event, action, and entity has its own data schema. You must verify that specific combinations exist before using it anywhere else.\nEvents or properties starting from \"$\" are system properties automatically captured by SDKs.\n\n# Examples of when to use the read_taxonomy tool\n\n<example>\nUser: What event can I use to track revenue?\nAssistant: I'm going to retrieve events and event properties to help you find the event you're looking for.\n*Retrieves events*\nAssistant: I've found a few matching events. I'm going to retrieve event properties to help you find the event you're looking for.\n*Retrieves event properties for each event*\nAssistant: I've found a few matching properties. I'm going to retrieve sample property values for each property to verify they can be used for revenue tracking.\n*Retrieves sample property values for each event property*\nAssistant: I've found matching combinations...\n\n<reasoning>\nThe assistant used the read_taxonomy tool because:\n1. The user is asking about **their custom data schema** in PostHog.\n2. The assistant needs to find a specific combination of events, properties, and property values that can be used to track revenue.\n</reasoning>\n</example>\n\n# Examples of when NOT to use the read_taxonomy tool\n\n<example>\nUser: What system properties does PostHog capture?\nAssistant: I'm going to search PostHog documentation to find the system properties that are automatically captured by SDKs.\n*Begins searching PostHog documentation*\n\n<reasoning>\nThe assistant did not use the read_taxonomy tool because it is an informational request. The user is simply asking for documentation search.\n</reasoning>\n</example>"
+        },
+        {
+            "name": "read_data",
+            "input_schema": {
+                "properties": { "kind": { "enum": ["datawarehouse_schema", "billing_info"], "type": "string" } },
+                "required": ["kind"],
+                "type": "object"
+            },
+            "description": "Use this tool to read user data created in PostHog. This tool returns data that the user manually creates in PostHog.\n\n# Data warehouse schema\n\nReturns the SQL ClickHouse schema for the user's data warehouse.\nYou MUST use this tool when:\n- Working with SQL.\n- The request is about data warehouse, connected data sources, etc.\n\n{billing_prompt}"
+        },
+        {
+            "name": "search",
+            "input_schema": {
+                "properties": {
+                    "kind": {
+                        "description": "Select the entity you want to find",
+                        "enum": [
+                            "insights",
+                            "docs",
+                            "dashboards",
+                            "cohorts",
+                            "actions",
+                            "experiments",
+                            "feature_flags",
+                            "notebooks",
+                            "surveys",
+                            "error_tracking_issues",
+                            "all"
+                        ],
+                        "type": "string"
+                    },
+                    "query": {
+                        "description": "Describe what you want to find. Include as much details from the context as possible.",
+                        "type": "string"
+                    }
+                },
+                "required": ["kind", "query"],
+                "type": "object"
+            },
+            "description": "Use this tool to search docs, insights, dashboards, cohorts, actions, experiments, feature flags, notebooks, error tracking issues, and surveys in PostHog.\nIf the user's question mentions multiple topics, search for each topic separately and combine the results.\n\n# Documentation search\n\nThis tool is absolutely NECESSARY to answer PostHog-related questions accurately, as our product and docs change all the time:\n- How to use PostHog\n- How to use PostHog features\n- How to contact support or other humans\n- How to report bugs\n- How to submit feature requests\n- To troubleshoot something\n- What default fields and properties are available for events and persons\n- …Or anything else PostHog-related\n\nFor troubleshooting, ask the user to provide the error messages they are encountering.\nIf no error message is involved, ask the user to describe their expected results vs. the actual results they're seeing.\nYou avoid suggesting things that the user has told you they've already tried.\n\nExamples:\n- Needs help understanding PostHog concepts\n- Has questions about SDK integration or instrumentation\n    - e.g. `posthog.capture('event')`, `posthog.captureException(err)`,\n    `posthog.identify(userId)`, `capture({ ... })` not working, etc.\n- Troubleshooting missing or unexpected data\n    - e.g. \"Events aren't arriving\", \"Why don't I see errors on the dashboard?\"\n- Wants to know more about PostHog the company\n- Has questions about incidents or system status\n- Has disabled session replay and needs help turning it back on\n- Reports an issue with PostHog\n- Wants to delete events from PostHog\n\nIf the user's question should be satisfied by using insights, do that before answering using documentation.\n\n# Other entity kinds\n\nUse this tool to find PostHog entities using full-text search.\nFull-text search is a more powerful way to find entities than natural language search. It relies on the PostgreSQL full-text search capabilities.\nSo the query used in this tool should be a natural language query that is optimized for full-text search, consider tokenizing of the query and using synonyms.\nIf you want to search for all entities, you should use `all`."
+        },
+        {
+            "name": "todo_write",
+            "input_schema": {
+                "properties": {
+                    "todos": {
+                        "description": "The updated todo list",
+                        "items": {
+                            "properties": {
+                                "content": { "minLength": 1, "type": "string" },
+                                "status": { "enum": ["pending", "in_progress", "completed"], "type": "string" },
+                                "id": { "type": "string" },
+                                "priority": { "enum": ["low", "medium", "high"], "type": "string" }
+                            },
+                            "required": ["content", "status", "id", "priority"],
+                            "type": "object"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": ["todos"],
+                "type": "object"
+            },
+            "description": "Use this tool to build and maintain a structured to-do list for the current session. It helps you monitor progress, organize complex work, and show thoroughness. It also makes both task progress and the overall status of the user’s requests clear to the user.\n\n# When to use this tool\nUse it proactively in these situations:\n\n1. Complex, multi-step work – when a task needs 3+ distinct steps or actions\n2. Non-trivial tasks – work that requires careful planning or multiple operations\n3. User explicitly asks for a to-do list – when they request it directly\n4. User supplies multiple tasks – e.g., a numbered or comma-separated list\n5. After new instructions arrive – immediately capture the requirements as to-dos\n6. When you begin a task – set it to `in_progress` BEFORE starting; ideally only one `in_progress` item at a time\n7. After finishing a task – mark it `completed` and add any follow-ups discovered during execution\n\n# When NOT to use this tool\nSkip it when:\n1. There’s only a single, straightforward task\n2. The task is trivial and tracking adds no organizational value\n3. It can be finished in fewer than 3 trivial steps\n4. The exchange is purely conversational or informational\n\nNOTE: If there’s just one trivial task, don’t use the tool–simply do the task directly.\n\n# Examples of when to use the todo list\n\n<example>\nUser: how many users have chatted with the AI assistant from the US?\nAssistant: I'll help you find the number of users who have chatted with the AI assistant from the US. Let me create a todo list to track this implementation.\n*Creates todo list with the following items:*\n1. Find the relevant events to \"chatted with the AI assistant\"\n2. Find the relevant properties of the events and persons to narrow down data to users from specific country\n3. Retrieve the sample property values for found properties\n4. Create the structured plan of the insight by using the data retrieved in the previous steps\n5. Generate the insight\n6. Analyze retrieved data\n*Begins working on the first task*\n\n<reasoning>\nThe assistant used the todo list because:\n1. Creating an insight requires understanding the taxonomy: events, properties, and property values are relevant to the user's query.\n2. The user query requests additional segmentation.\n3. Property values might require retrieving sample property values to understand the data better.\n4. Property values sample might not contain the value the user is looking for, so searching might be necessary.\n5. Taxonomy might have multiple combinations of data that will equally answer the question.\n</reasoning>\n</example>\n\n<example>\nUser: Has eleventy churned?\nAssistant: Let me first search for a company with name \"eleventy\".\n*Uses the search tool to find a property value with the \"eleventy\" value in the project*\nAssistant: I've found a property value with the \"Eleventy.ai\" value. I'm going to search for existing insights tracking the customer churn rate.\n*Uses the search tools to find insights tracking the customer churn rate in the project*\nAssistant: I've found 0 matching insights. Let me create a new insight checking if the company \"Eleventy.ai\" has churned. I'm going to create a todo list to track these changes.\n*Creates a todo list with specific steps to create a new insight*\n\n<reasoning>\nThe assistant used the todo list because:\n1. First, the assistant searched to understand the scope of the task\n2. After the assistant verified that there isn't an insight tracking the customer churn rate, it determined this was a complex task with multiple steps\n3. The todo list helps ensure every instance is tracked and updated systematically\n</reasoning>\n</example>\n\n<example>\nUser: Check why onboarding completion rate has dropped and if it is connected with a low sign-up count\nAssistant: I'll help you analyze the reasons why the metrics have changed. First, let's add all the features to the todo list.\n*Creates a todo list breaking down each analysis into specific tasks based on the project data*\nAssistant: Let's start with analyzing the sign-up count. This will involve retrieving the events and might involve retrieving additional data.\n\n<reasoning>\nThe assistant used the todo list because:\n1. The user requested multiple complex analysis for different metrics that must be separate insights\n2. The todo list helps organize these large requests into manageable tasks\n3. This approach allows for tracking progress across the entire request\n</reasoning>\n</example>\n\n# Examples of when NOT to use the todo list\n\n<example>\nUser: What does this query do?\nAssistant: Let me analyze the query you provided.\n*Reads the attached context in the conversation history*\nAssistant: The query is retrieving the sign-up count for the last 30 days.\n\n<reasoning>\nThe assistant did not use the todo list because this is a single, trivial task that can be completed in one step. There's no need to track multiple tasks or steps for such a straightforward request.\n</reasoning>\n</example>\n\n<example>\nUser: How can I capture exception in my Next.js application?\nAssistant: Let me search for the relevant documentation.\n*Uses the search tool to find the relevant documentation*\nAssistant: I've found the relevant documentation.\n*Summarizes and returns the answer to the user's question*\n\n<reasoning>\nThe assistant did not use the todo list because this is an informational request. The user is simply asking for help, not for the assistant to perform multiple steps or tasks.\n</reasoning>\n</example>\n\n# Task states and management\n\n1. **Task States**: Use these states to track progress:\n  - pending: Task not yet started\n  - in_progress: Currently working on (limit to ONE task at a time)\n  - completed: Finished successfully\n\n2. **Managing Tasks**:\n  - Update statuses in real time as you work\n  - Mark tasks complete IMMEDIATELY when done–don’t batch them\n  - Keep only ONE task `in_progress` at any moment\n  - Finish the current task before starting another\n  - Remove tasks that are no longer relevant\n\n3. **Completion Rules**:\n  - Mark a task `completed` only when it’s FULLY done\n  - If you hit errors, blockers, or can’t finish, leave it `in_progress`\n  - When blocked, add a new task describing what must be resolved\n  - Never mark `completed` if:\n    - Implementation is partial\n    - Required data couldn’t be found\n\n4. **Task Breakdown**:\n  - Create specific, actionable items\n  - Break complex tasks into smaller, manageable steps\n  - Use clear, descriptive task names\n\nWhen unsure, use this tool. Proactive task management shows attentiveness and helps ensure all requirements are met."
+        },
+        {
+            "name": "create_and_query_insight",
+            "input_schema": {
+                "properties": {
+                    "query_description": {
+                        "description": "A description of the query to generate, encapsulating the details of the user's request. Include all relevant context from earlier messages too, as the tool won't see that conversation history. If an existing insight has been used as a starting point, include that insight's filters and query in the description. Don't be overly prescriptive with event or property names, unless the user indicated they mean this specific name (e.g. with quotes). If the users seems to ask for a list of entities, rather than a count, state this explicitly.",
+                        "type": "string"
+                    }
+                },
+                "required": ["query_description"],
+                "type": "object"
+            },
+            "description": "Use this tool to spawn a subagent that will create a product analytics insight for a given description.\nThe tool generates a query and returns formatted text results for a specific data question or iterates on a previous query. It only retrieves a single query per call. If the user asks for multiple insights, you need to decompose a query into multiple subqueries and call the tool for each subquery.\n\nFollow these guidelines when retrieving data:\n- If the same insight is already in the conversation history, reuse the retrieved data only when this does not violate the <data_analysis_guidelines> section (i.e. only when a presence-check, count, or sort on existing columns is enough).\n- If analysis results have been provided, use them to answer the user's question. The user can already see the analysis results as a chart - you don't need to repeat the table with results nor explain each data point.\n- If the retrieved data and any data earlier in the conversations allow for conclusions, answer the user's question and provide actionable feedback.\n- If there is a potential data issue, retrieve a different new analysis instead of giving a subpar summary. Note: empty data is NOT a potential data issue.\n- If the query cannot be answered with a UI-built insight type - trends, funnels, retention - choose the SQL type to answer the question (e.g. for listing events or aggregating in ways that aren't supported in trends/funnels/retention).\n\nIMPORTANT: Avoid generic advice. Take into account what you know about the product. Your answer needs to be super high-impact and no more than a few sentences.\nRemember: do NOT retrieve data for the same query more than 3 times in a row.\n\n# Data schema\n\nYou can pass events, actions, properties, and property values to this tool by specifying the \"Data schema\" section.\n\n<example>\nUser: Calculate onboarding completion rate for the last week.\nAssistant: I'm going to retrieve the existing data schema first.\n*Retrieves matching events, properties, and property values*\nAssistant: I'm going to create a new trends insight.\n*Calls this tool with the query description: \"Trends insight of the onboarding completion rate. Data schema: Relevant matching data schema\"*\n</example>\n\n# Supported insight types\n## Trends\nA trends insight visualizes events over time using time series. They're useful for finding patterns in historical data.\n\nThe trends insights have the following features:\n- The insight can show multiple trends in one request.\n- Custom formulas can calculate derived metrics, like `A/B*100` to calculate a ratio.\n- Filter and break down data using multiple properties.\n- Compare with the previous period and sample data.\n- Apply various aggregation types, like sum, average, etc., and chart types.\n- And more.\n\nExamples of use cases include:\n- How the product's most important metrics change over time.\n- Long-term patterns, or cycles in product's usage.\n- The usage of different features side-by-side.\n- How the properties of events vary using aggregation (sum, average, etc).\n- Users can also visualize the same data points in a variety of ways.\n\n## Funnel\nA funnel insight visualizes a sequence of events that users go through in a product. They use percentages as the primary aggregation type. Funnels use two or more series, so the conversation history should mention at least two events.\n\nThe funnel insights have the following features:\n- Various visualization types (steps, time-to-convert, historical trends).\n- Filter data and apply exclusion steps.\n- Break down data using a single property.\n- Specify conversion windows, details of conversion calculation, attribution settings.\n- Sample data.\n- And more.\n\nExamples of use cases include:\n- Conversion rates.\n- Drop off steps.\n- Steps with the highest friction and time to convert.\n- If product changes are improving their funnel over time.\n- Average/median time to convert.\n- Conversion trends over time.\n\n## Retention\nA retention insight visualizes how many users return to the product after performing some action. They're useful for understanding user engagement and retention.\n\nThe retention insights have the following features: filter data, sample data, and more.\n\nExamples of use cases include:\n- How many users come back and perform an action after their first visit.\n- How many users come back to perform action X after performing action Y.\n- How often users return to use a specific feature.\n\n## SQL\nThe 'sql' insight type allows you to write arbitrary SQL queries to retrieve data.\n\nThe SQL insights have the following features:\n- Filter data using arbitrary SQL.\n- All ClickHouse SQL features.\n- You can nest subqueries as needed."
+        },
+        {
+            "name": "session_summarization",
+            "input_schema": {
+                "properties": {
+                    "session_summarization_query": {
+                        "description": "\n        - The user's complete query for session recordings summarization.\n        - This will be used to find relevant session recordings.\n        - Always pass the user's complete, unmodified query.\n        - Examples:\n          * 'summarize all session recordings from yesterday'\n          * 'analyze mobile user session recordings from last week, even if 1 second'\n          * 'watch last 300 session recordings of MacOS users from US'\n          * and similar\n        ",
+                        "type": "string"
+                    },
+                    "should_use_current_filters": {
+                        "description": "\n        - Whether to use current filters from user's UI to find relevant session recordings.\n        - IMPORTANT: Should be always `false` if the current filters or `search_session_recordings` tool are not present in the conversation history.\n        - Examples:\n          * Set to `true` if one of the conditions is met:\n            - the user wants to summarize \"current/selected/opened/my/all/these\" session recordings\n            - the user wants to use \"current/these\" filters\n            - the user's query specifies filters identical to the current filters\n            - if the user's query doesn't specify any filters/conditions\n            - the user refers to what they're \"looking at\" or \"viewing\"\n          * Set to `false` if one of the conditions is met:\n            - no current filters or `search_session_recordings` tool are present in the conversation\n            - the user specifies date/time period different from the current filters\n            - the user specifies conditions (user, device, id, URL, etc.) not present in the current filters\n        ",
+                        "type": "boolean"
+                    },
+                    "summary_title": {
+                        "description": "\n        - The name of the summary that is expected to be generated from the user's `session_summarization_query` and/or `current_filters` (if present).\n        - The name should cover in 3-7 words what sessions would be to be summarized in the summary\n        - This won't be used for any search of filtering, only to properly label the generated summary.\n        - Examples:\n          * If `should_use_current_filters` is `false`, then the `summary_title` should be generated based on the `session_summarization_query`:\n            - query: \"I want to watch all the sessions of user `user@example.com` in the last 30 days no matter how long\" -> name: \"Sessions of the user user@example.com (last 30 days)\"\n            - query: \"summarize my last 100 session recordings\" -> name: \"Last 100 sessions\"\n            - and similar\n          * If `should_use_current_filters` is `true`, then the `summary_title` should be generated based on the current filters in the context (if present):\n            - filters: \"{\"key\":\"$os\",\"value\":[\"Mac OS X\"],\"operator\":\"exact\",\"type\":\"event\"}\" -> name: \"MacOS users\"\n            - filters: \"{\"date_from\": \"-7d\", \"filter_test_accounts\": True}\" -> name: \"All sessions (last 7 days)\"\n            - and similar\n          * If there's not enough context to generated the summary name - keep it an empty string (\"\")\n        ",
+                        "type": "string"
+                    }
+                },
+                "required": ["session_summarization_query", "should_use_current_filters", "summary_title"],
+                "type": "object"
+            },
+            "description": "Use this tool to summarize session recordings by analysing the events within those sessions to find patterns and issues.\nIt will return a textual summary of the captured session recordings.\n\n# When to use the tool:\nWhen the user asks to summarize session recordings:\n- \"summarize\" synonyms: \"watch\", \"analyze\", \"review\", and similar\n- \"session recordings\" synonyms: \"sessions\", \"recordings\", \"replays\", \"user sessions\", and similar\n\n# When NOT to use the tool:\n- When the user asks to find, search for, or look up session recordings, but doesn't ask to summarize them\n- When users asks to update, change, or adjust session recordings filters\n\n# Synonyms\n- \"summarize\": \"watch\", \"analyze\", \"review\", and similar\n- \"session recordings\": \"sessions\", \"recordings\", \"replays\", \"user sessions\", and similar\n\n# Managing context\nIf the conversation history contains context about the current filters or session recordings, follow these steps:\n- Convert the user query into a `session_summarization_query`\n- The query should be used to understand the user's intent\n- Decide if the query is relevant to the current filters and set `should_use_current_filters` accordingly\n- Generate the `summary_title` based on the user's query and the current filters\n\nOtherwise:\n- Convert the user query into a `session_summarization_query`\n- The query should be used to search for relevant sessions and then summarize them\n- Assume the `should_use_current_filters` should be always `false`\n- Generate the `summary_title` based on the user's query\n\n# Additional guidelines\n- CRITICAL: Always pass the user's complete, unmodified query to the `session_summarization_query` parameter\n- DO NOT truncate, summarize, or extract keywords from the user's query\n- The query is used to find relevant sessions - context helps find better matches\n- Use explicit tool definition to make a decision"
+        },
+        {
+            "name": "create_dashboard",
+            "input_schema": {
+                "properties": {
+                    "search_insights_queries": {
+                        "description": "A list of insights to be included in the dashboard. Include all the insights that the user mentioned.",
+                        "items": {
+                            "description": "A single insight query to be included in a dashboard.\nIncludes the name and description of the insight to be included in the dashboard.",
+                            "properties": {
+                                "name": {
+                                    "description": "The short name of the insight to be included in the dashboard, it will be used in the dashboard tile. So keep it short and concise. It will be displayed as a header in the insight tile, so make sure it is starting with a capital letter. Be specific about time periods and filters if the user mentioned them. Do not be general or vague.",
+                                    "type": "string"
+                                },
+                                "description": {
+                                    "description": "The detailed description of the insight to be included in the dashboard. Include all relevant context about the insight from earlier messages too, as the tool won't see that conversation history. Do not forget fiters, properties, event names if the user mentioned them. Be specific about time periods and filters if the user mentioned them. Do not be general or vague.",
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["name", "description"],
+                            "type": "object"
+                        },
+                        "type": "array"
+                    },
+                    "dashboard_name": {
+                        "description": "The name of the dashboard to be created based on the user request. It should be short and concise as it will be displayed as a header in the dashboard tile.",
+                        "type": "string"
+                    }
+                },
+                "required": ["search_insights_queries", "dashboard_name"],
+                "type": "object"
+            },
+            "description": "Use this tool when users ask to create, build, or make a new dashboard with insights.\nThis tool will search for existing insights that match the user's requirements so no need to call `search_insights` tool, or create new insights if none are found, then combine them into a dashboard.\nDo not call this tool if the user only asks to find, search for, or look up existing insights and does not ask to create a dashboard.\nIf you decided to use this tool, there is no need to call `search_insights` tool beforehand. The tool will search for existing insights that match the user's requirements and create new insights if none are found."
+        },
+        {
+            "name": "navigate",
+            "input_schema": {
+                "properties": {
+                    "page_key": {
+                        "enum": [
+                            "actions",
+                            "activity",
+                            "alerts",
+                            "annotations",
+                            "createAction",
+                            "cohorts",
+                            "dashboards",
+                            "database",
+                            "earlyAccessFeatures",
+                            "eventDefinitions",
+                            "errorTracking",
+                            "experiments",
+                            "featureFlags",
+                            "game368hedgehogs",
+                            "heatmaps",
+                            "ingestionWarnings",
+                            "insights",
+                            "insightNew",
+                            "pipeline",
+                            "projectHomepage",
+                            "propertyDefinitions",
+                            "max",
+                            "notebooks",
+                            "replay",
+                            "replaySettings",
+                            "revenueAnalytics",
+                            "savedInsights",
+                            "settings",
+                            "sqlEditor",
+                            "surveys",
+                            "surveyTemplates",
+                            "toolbarLaunch",
+                            "webAnalytics",
+                            "webAnalyticsWebVitals",
+                            "persons"
+                        ],
+                        "type": "string",
+                        "description": "The specific key identifying the page to navigate to. Must be one of the predefined literal values."
+                    }
+                },
+                "required": ["page_key"],
+                "type": "object"
+            },
+            "description": "Use the `navigate` tool to move between different pages in the PostHog application.\nThese pages are tied to PostHog's products and/or functionalities and provide tools for retrieving information or performing actions.\nAfter navigating to a page, you can use the tools available there to retrieve information or perform actions.\nMake sure that the state is aligned with the user's request using the tools available.\n\n# When to use this tool\n- To access tools that are only available on specific pages.\n- To navigate to a page that the user is looking for.\n- If the user asks to do something fun in the platform, you can navigate them to the `game368hedgehogs` page.\n\n# When NOT to use this tool:\n- If the currently defined tools can be used to assist the user. For example, if a SQL query fails, the tools of the SQL Editor page will not fix the query.\n\n# List of pages and the tools available on a page\n- **actions**: Combine several related events into one, which you can then analyze in insights and dashboards as if it were a single event.\n- **cohorts**: A catalog of identified persons and your created cohorts.\n- **dashboards**: Create and manage your dashboards\n- **earlyAccessFeatures**: Allow your users to individually enable or disable features that are in public beta.\n- **errorTracking**: Track and analyze your error tracking data to understand and fix issues. [tools: Filter issues, Find impactful issues]\n- **experiments**: Experiments help you test changes to your product to see which changes will lead to optimal results. Automatic statistical calculations let you see if the results are valid or if they are likely just a chance occurrence.\n- **featureFlags**: Use feature flags to safely deploy and roll back new features in an easy-to-manage way. Roll variants out to certain groups, a percentage of users, or everyone all at once.\n- **notebooks**: Notebooks are a way to organize your work and share it with others.\n- **persons**: A catalog of all the people behind your events\n- **insights**: Track, analyze, and experiment with user behavior.\n- **insightNew** [tools: Edit the insight]\n- **savedInsights**: Track, analyze, and experiment with user behavior.\n- **alerts**: Track, analyze, and experiment with user behavior.\n- **replay**: Replay recordings of user sessions to understand how users interact with your product or website. [tools: Search recordings]\n- **revenueAnalytics**: Track and analyze your revenue metrics to understand your business performance and growth. [tools: Filter revenue analytics]\n- **surveys**: Create surveys to collect feedback from your users [tools: Create surveys, Analyze survey responses]\n- **webAnalytics**: Analyze your web analytics data to understand website performance and user behavior.\n- **webAnalyticsWebVitals**: Analyze your web analytics data to understand website performance and user behavior.\n- **activity**: A catalog of all user interactions with your app or website.\n- **sqlEditor**: Write and execute SQL queries against your data warehouse [tools: Write and tweak SQL]\n- **heatmaps**: Heatmaps are a way to visualize user behavior on your website."
+        },
+        {
+            "name": "search_session_recordings",
+            "input_schema": {
+                "properties": {
+                    "change": {
+                        "description": "The specific change to be made to recordings filters, briefly described. Include ALL relevant details that may or may not be needed, as the tool won't receive the history of this conversation.",
+                        "type": "string"
+                    }
+                },
+                "required": ["change"],
+                "type": "object"
+            },
+            "description": "\n    - Update session recordings filters on this page, in order to search for session recordings.\n    - When to use the tool:\n      * When the user asks to update session recordings filters\n        - \"update\" synonyms: \"change\", \"modify\", \"adjust\", and similar\n        - \"session recordings\" synonyms: \"sessions\", \"recordings\", \"replays\", \"user sessions\", and similar\n      * When the user asks to search for session recordings\n        - \"search for\" synonyms: \"find\", \"look up\", and similar\n    - When NOT to use the tool:\n      * When the user asks to summarize session recordings\n    "
+        }
+    ]
+}
