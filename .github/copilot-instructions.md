@@ -2,7 +2,9 @@
 
 ## Architecture Overview
 
-PostHog is a full-stack product analytics platform with three main architectural layers:
+PostHog is a full-stack product analytics platform with an event-driven architecture:
+
+### Source Code Development (this repo)
 
 1. **Django Backend** (`posthog/`) - REST APIs, models, business logic, Celery tasks
 2. **Frontend** (`frontend/`) - React+TypeScript SPA using Vite, Kea for state management
@@ -14,6 +16,20 @@ Key subsystems:
 - **Query Runners** (`posthog/hogql_queries/`) - Execute queries, cache results, power insights
 - **Temporal** (`posthog/temporal/`) - Workflow orchestration for data imports, batch jobs
 - **CDP** (`posthog/cdp/`) - Customer data platform, event transformations, destinations
+
+### Docker Deployment Architecture
+
+When deployed via Docker Compose, services interact as:
+```
+Web (Django) ─┬─> PostgreSQL (metadata)
+              ├─> ClickHouse (analytics data) ─> Zookeeper
+              ├─> Redis (cache)
+              └─> Kafka (events) ─> Zookeeper
+                    ↓
+Worker (Celery) + Plugins (Node.js)
+```
+
+**Service Dependencies**: Web service waits for all infrastructure (db, redis, clickhouse, kafka, worker) before starting. Migrations run automatically on web startup.
 
 ## Environment & Workflow
 
@@ -185,9 +201,61 @@ PNPM workspace with Turbo for builds. Use `pnpm --filter=@posthog/frontend <cmd>
 - **Plugins**: Run in VM sandbox (`plugin-server/src/worker/vm/`), transform events
 - **Temporal**: Data imports, batch exports via workflow orchestration
 
+## Docker Deployment (for deployment repos)
+
+### Configuration Pattern
+**ALL configuration lives in environment variables** - never hardcode values in `docker-compose.yml`.
+
+### Critical Files
+- `.env` - Active configuration (git-ignored, contains secrets)
+- `.env.example` - Template with defaults (committed to git)
+- `docker-compose.yml` - Uses `${VAR_NAME}` syntax for all config
+- `clickhouse/config.xml` - Minimal static config (logging, network)
+- `clickhouse/users.xml` - User profiles (static, but passwords from `.env`)
+
+### Environment Variable Categories (32 total)
+1. **Database** (4): `POSTGRES_*`, `DATABASE_URL`
+2. **ClickHouse** (6): `CLICKHOUSE_*` (host, db, user, password, secure, verify)
+3. **Redis** (2): `REDIS_URL`, `REDIS_MAX_MEMORY`
+4. **Kafka** (7): `KAFKA_*` including replication factors and ISR settings
+5. **Zookeeper** (2): `ZOOKEEPER_CLIENT_PORT`, `ZOOKEEPER_TICK_TIME`
+6. **PostHog App** (7): `SECRET_KEY`, `SITE_URL`, `WEB_PORT`, proxy settings
+7. **Encryption** (2): `ENCRYPTION_KEYS`, `ENCRYPTION_SALT_KEYS` (must be base64url-encoded 32-byte strings)
+8. **Server Config** (2): `CLICKHOUSE_LOG_LEVEL`, `CLICKHOUSE_MAX_MEMORY_USAGE`
+
+### Encryption Keys Must Use Base64URL Format
+Standard base64 uses `+/=`, but PostHog plugin server requires base64url (`-_` and no padding):
+```bash
+# Generate correctly formatted keys
+openssl rand -base64 32 | tr '+/' '-_' | tr -d '='
+```
+
+### Docker Commands
+```bash
+# Validate configuration
+docker-compose config
+
+# Start all services
+docker-compose up -d
+
+# View logs (all or specific service)
+docker-compose logs -f [service-name]
+
+# Stop and remove containers (keeps data)
+docker-compose down
+
+# Nuclear option: delete all data volumes
+docker-compose down -v
+```
+
+### Expected Warnings (Safe to Ignore)
+- "Skipping async migrations setup. This is unsafe in production!" (dev mode)
+- "pkg_resources is deprecated" (Python library warning)
+- "GeoLite2 MMDB file not found" (optional geolocation feature)
+
 ## Documentation References
 
 For detailed ClickHouse migration patterns, see:
-- `AGENTS.md` - This file (consolidated agent instructions)
+- `AGENTS.md` - Consolidated agent instructions
 - `posthog/clickhouse/migrations/AGENTS.md` - Comprehensive migration guide
 - `posthog/clickhouse/migrations/README.md` - Migration basics
